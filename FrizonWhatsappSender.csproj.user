@@ -10,5 +10,11 @@
     <Compile Update="FrizonMainForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="frmConfigMidia.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="SplashForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
 </Project>
