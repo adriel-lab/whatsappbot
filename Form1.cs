@@ -5,6 +5,7 @@ namespace FrizonWhatsappSender
         public Form1()
         {
             InitializeComponent();
+        
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -39,6 +40,12 @@ namespace FrizonWhatsappSender
         {
             about aboutForm = new about();
             aboutForm.Show(); // ou frizonForm.ShowDialog(); se quiser modal
+        }
+
+        private void lblVendas_Click(object sender, EventArgs e)
+        {
+            frmConfigMidia frmConfigMidiaForm = new frmConfigMidia();
+            frmConfigMidiaForm.Show(); // ou frizonForm.ShowDialog(); se quiser modal
         }
     }
 }

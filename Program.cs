@@ -10,7 +10,14 @@ namespace FrizonWhatsappSender
         {
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
+
+
             ApplicationConfiguration.Initialize();
+
+            using (var splash = new SplashForm())
+            {
+                splash.ShowDialog();
+            }
             Application.Run(new Form1());
         }
     }

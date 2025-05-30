@@ -200,6 +200,7 @@
             lblVendas.Size = new Size(109, 19);
             lblVendas.TabIndex = 1;
             lblVendas.Text = "Materiais/Mídia";
+            lblVendas.Click += lblVendas_Click;
             // 
             // iconVendas
             // 

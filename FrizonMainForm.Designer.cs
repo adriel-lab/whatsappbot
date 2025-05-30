@@ -17,6 +17,7 @@
 
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             btnSelecionarPlanilha = new Button();
             btnIniciar = new Button();
             btnParar = new Button();
@@ -30,9 +31,17 @@
             panelControles = new Panel();
             panelLog = new Panel();
             lblTitulo = new Label();
+            panelMensagens = new Panel();
+            groupBoxMensagens = new GroupBox();
+            buttonHelpMensagens = new Button();
+            txtMensagemPersonalizada = new TextBox();
+            chkUsarMensagemPersonalizada = new CheckBox();
+            toolTip1 = new ToolTip(components);
             ((System.ComponentModel.ISupportInitialize)picQRCodeInfo).BeginInit();
             panelControles.SuspendLayout();
             panelLog.SuspendLayout();
+            panelMensagens.SuspendLayout();
+            groupBoxMensagens.SuspendLayout();
             SuspendLayout();
             // 
             // btnSelecionarPlanilha
@@ -136,9 +145,9 @@
             // 
             picQRCodeInfo.BackColor = Color.White;
             picQRCodeInfo.BorderStyle = BorderStyle.FixedSingle;
-            picQRCodeInfo.Location = new Point(20, 300);
+            picQRCodeInfo.Location = new Point(20, 288);
             picQRCodeInfo.Name = "picQRCodeInfo";
-            picQRCodeInfo.Size = new Size(180, 180);
+            picQRCodeInfo.Size = new Size(180, 195);
             picQRCodeInfo.TabIndex = 13;
             picQRCodeInfo.TabStop = false;
             picQRCodeInfo.Visible = false;
@@ -189,11 +198,62 @@
             lblTitulo.AutoSize = true;
             lblTitulo.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
             lblTitulo.ForeColor = Color.FromArgb(82, 112, 79);
-            lblTitulo.Location = new Point(20, 20);
+            lblTitulo.Location = new Point(20, 0);
             lblTitulo.Name = "lblTitulo";
             lblTitulo.Size = new Size(296, 32);
             lblTitulo.TabIndex = 17;
             lblTitulo.Text = "Frizon WhatsApp Sender";
+            // 
+            // panelMensagens
+            // 
+            panelMensagens.BackColor = Color.White;
+            panelMensagens.Controls.Add(groupBoxMensagens);
+            panelMensagens.Location = new Point(260, 426);
+            panelMensagens.Name = "panelMensagens";
+            panelMensagens.Size = new Size(480, 144);
+            panelMensagens.TabIndex = 18;
+            // 
+            // groupBoxMensagens
+            // 
+            groupBoxMensagens.BackColor = Color.WhiteSmoke;
+            groupBoxMensagens.Controls.Add(buttonHelpMensagens);
+            groupBoxMensagens.Controls.Add(txtMensagemPersonalizada);
+            groupBoxMensagens.Controls.Add(chkUsarMensagemPersonalizada);
+            groupBoxMensagens.Location = new Point(10, 3);
+            groupBoxMensagens.Name = "groupBoxMensagens";
+            groupBoxMensagens.Size = new Size(460, 124);
+            groupBoxMensagens.TabIndex = 0;
+            groupBoxMensagens.TabStop = false;
+            groupBoxMensagens.Text = "Mensagens";
+            // 
+            // buttonHelpMensagens
+            // 
+            buttonHelpMensagens.Location = new Point(423, 14);
+            buttonHelpMensagens.Name = "buttonHelpMensagens";
+            buttonHelpMensagens.Size = new Size(27, 23);
+            buttonHelpMensagens.TabIndex = 2;
+            buttonHelpMensagens.Text = "?";
+            buttonHelpMensagens.UseVisualStyleBackColor = true;
+            buttonHelpMensagens.Click += buttonHelpMensagens_Click;
+            // 
+            // txtMensagemPersonalizada
+            // 
+            txtMensagemPersonalizada.Location = new Point(10, 43);
+            txtMensagemPersonalizada.Multiline = true;
+            txtMensagemPersonalizada.Name = "txtMensagemPersonalizada";
+            txtMensagemPersonalizada.Size = new Size(440, 70);
+            txtMensagemPersonalizada.TabIndex = 1;
+            // 
+            // chkUsarMensagemPersonalizada
+            // 
+            chkUsarMensagemPersonalizada.AutoSize = true;
+            chkUsarMensagemPersonalizada.Location = new Point(13, 22);
+            chkUsarMensagemPersonalizada.Name = "chkUsarMensagemPersonalizada";
+            chkUsarMensagemPersonalizada.Size = new Size(156, 19);
+            chkUsarMensagemPersonalizada.TabIndex = 0;
+            chkUsarMensagemPersonalizada.Text = "Usar mensagem padrão?";
+            chkUsarMensagemPersonalizada.UseVisualStyleBackColor = true;
+            chkUsarMensagemPersonalizada.CheckedChanged += chkUsarMensagemPersonalizada_CheckedChanged;
             // 
             // FrizonMainForm
             // 
@@ -201,6 +261,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(250, 250, 250);
             ClientSize = new Size(760, 600);
+            Controls.Add(panelMensagens);
             Controls.Add(lblTitulo);
             Controls.Add(panelLog);
             Controls.Add(panelControles);
@@ -212,6 +273,9 @@
             panelControles.ResumeLayout(false);
             panelControles.PerformLayout();
             panelLog.ResumeLayout(false);
+            panelMensagens.ResumeLayout(false);
+            groupBoxMensagens.ResumeLayout(false);
+            groupBoxMensagens.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -231,5 +295,11 @@
         private Panel panelControles;
         private Panel panelLog;
         private Label lblTitulo;
+        private Panel panelMensagens;
+        private GroupBox groupBoxMensagens;
+        private TextBox txtMensagemPersonalizada;
+        private CheckBox chkUsarMensagemPersonalizada;
+        private ToolTip toolTip1;
+        private Button buttonHelpMensagens;
     }
 }

@@ -74,6 +74,7 @@ namespace FrizonWhatsappSender
             InitializeComponent();
             btnParar.Enabled = false;
             btnIniciar.Enabled = false;
+            chkUsarMensagemPersonalizada_CheckedChanged(null, null);
         }
 
         private void SafeUpdateUI(Action action)
@@ -90,7 +91,8 @@ namespace FrizonWhatsappSender
 
         private void AppendToLog(string message)
         {
-            SafeUpdateUI(() => {
+            SafeUpdateUI(() =>
+            {
                 txtLog.AppendText($"[{DateTime.Now:HH:mm:ss}] {message}\r\n");
             });
         }
@@ -226,6 +228,14 @@ namespace FrizonWhatsappSender
 
         private void btnIniciar_Click(object sender, EventArgs e)
         {
+
+            if (chkUsarMensagemPersonalizada.Checked && string.IsNullOrWhiteSpace(txtMensagemPersonalizada.Text))
+            {
+                MessageBox.Show("Por favor, insira a mensagem personalizada!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+
             if (contatos == null || contatos.Count == 0)
             {
                 MessageBox.Show("Nenhum contato válido encontrado no arquivo!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -268,7 +278,8 @@ namespace FrizonWhatsappSender
 
                 AppendToLog("Aguardando confirmação do usuário...");
 
-                SafeUpdateUI(() => {
+                SafeUpdateUI(() =>
+                {
                     lblStatus.Text = "Pronto para iniciar";
                     lblStatus.ForeColor = Color.Blue;
                     btnPularAutenticacao.Enabled = true;
@@ -313,7 +324,8 @@ namespace FrizonWhatsappSender
             if (driver != null && isRunning)
             {
                 AppendToLog("⚡ Iniciando envios por confirmação do usuário");
-                SafeUpdateUI(() => {
+                SafeUpdateUI(() =>
+                {
                     lblStatus.Text = "Iniciando envios...";
                     lblStatus.ForeColor = Color.Green;
                     btnPularAutenticacao.Enabled = false;
@@ -337,8 +349,10 @@ namespace FrizonWhatsappSender
                         EnviarMensagem(contato);
                         totalEnviados++;
 
-                        AppendToLog($"✅ {totalEnviados}/{contatos.Count} - {contato.Nome} ({contato.Telefone})");
-                        SafeUpdateUI(() => {
+                        AppendToLog($"✅ {totalEnviados}/{contatos.Count} - {contato.Nome} ({contato.Telefone})" +
+                          (contato.UsouMensagemPersonalizada ? " [Mensagem padrão]" : ""));
+                        SafeUpdateUI(() =>
+                        {
                             lblEnviados.Text = $"Enviados: {totalEnviados}/{contatos.Count}";
                         });
 
@@ -363,14 +377,16 @@ namespace FrizonWhatsappSender
                 }
 
                 AppendToLog("🎉 Processo concluído com sucesso!");
-                SafeUpdateUI(() => {
+                SafeUpdateUI(() =>
+                {
                     lblStatus.Text = $"Concluído - {totalEnviados}/{contatos.Count} enviados";
                 });
             }
             catch (Exception ex)
             {
                 AppendToLog($"❌ ERRO CRÍTICO: {ex.Message}");
-                SafeUpdateUI(() => {
+                SafeUpdateUI(() =>
+                {
                     lblStatus.Text = "Erro no processo";
                     lblStatus.ForeColor = Color.Red;
                 });
@@ -391,7 +407,20 @@ namespace FrizonWhatsappSender
             bool enviadoComSucesso = false;
             Exception ultimoErro = null;
 
-            string mensagemFormatada = contato.Mensagem.Replace("{nome}", contato.Nome);
+
+            string mensagemFormatada;
+            if (chkUsarMensagemPersonalizada.Checked)
+            {
+                mensagemFormatada = txtMensagemPersonalizada.Text.Replace("{nome}", contato.Nome);
+                contato.UsouMensagemPersonalizada = true;
+            }
+            else
+            {
+                mensagemFormatada = contato.Mensagem.Replace("{nome}", contato.Nome);
+                contato.UsouMensagemPersonalizada = false;
+            }
+
+
             string url = $"https://web.whatsapp.com/send?phone={contato.Telefone}&text={Uri.EscapeDataString(mensagemFormatada)}";
 
             while (tentativas < maxTentativas && !enviadoComSucesso)
@@ -493,7 +522,8 @@ namespace FrizonWhatsappSender
 
         private void FinalizarProcesso()
         {
-            SafeUpdateUI(() => {
+            SafeUpdateUI(() =>
+            {
                 btnPularAutenticacao.Enabled = false;
                 txtLog.AppendText($"[{DateTime.Now:HH:mm:ss}] {(isRunning ? "✔️ Processo concluído!" : "⏸ Processo interrompido!")}\r\n");
                 btnIniciar.Enabled = true;
@@ -534,12 +564,35 @@ namespace FrizonWhatsappSender
             }
             catch { }
         }
+
+        private void chkUsarMensagemPersonalizada_CheckedChanged(object sender, EventArgs e)
+        {
+            txtMensagemPersonalizada.Enabled = chkUsarMensagemPersonalizada.Checked;
+        }
+
+        private void buttonHelpMensagens_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Ao marcar a caixa de seleção, a mensagem abaixo será automaticamente enviada para todos os contatos.",
+                           "Ajuda",
+                           MessageBoxButtons.OK,
+                           MessageBoxIcon.Information);
+        }
     }
+
+
+
+
+
+
+
+
+
 
     public class Contato
     {
         public string Nome { get; set; }
         public string Telefone { get; set; }
         public string Mensagem { get; set; }
+        public bool UsouMensagemPersonalizada { get; set; }
     }
 }
