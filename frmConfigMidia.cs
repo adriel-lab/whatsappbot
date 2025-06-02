@@ -2,65 +2,176 @@
 using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 using LibVLCSharp.Shared;
 using LibVLCSharp.WinForms;
-
 
 namespace FrizonWhatsappSender
 {
     public partial class frmConfigMidia : Form
     {
-
         private LibVLC _libVLC;
         private LibVLCSharp.Shared.MediaPlayer _mediaPlayer;
         private VideoView _videoView;
         private readonly string caminhoImagemPadrao = Path.Combine(Application.StartupPath, "Media", "imagem_padrao.jpg");
         private readonly string caminhoVideoPadrao = Path.Combine(Application.StartupPath, "Media", "video_padrao.mp4");
-
+        private bool _videoCarregado = false;
 
         public frmConfigMidia()
         {
             InitializeComponent();
             Directory.CreateDirectory(Path.Combine(Application.StartupPath, "Media"));
-            CarregarMidias();
-            carregarVideo();
+
+            // Garante que o formulário está completamente carregado antes de iniciar operações assíncronas
+            this.Load += async (sender, e) =>
+            {
+                await CarregarImagemAsync();
+                await ConfigurarPlayerVideoAsync();
+            };
         }
 
-
-        private void carregarVideo()
+        private async Task CarregarImagemAsync()
         {
-            Core.Initialize(); // Inicializa o LibVLCSharp
-
-            _libVLC = new LibVLC();
-            _mediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVLC);
-
-            _videoView = new VideoView
+            if (!File.Exists(caminhoImagemPadrao))
             {
-                MediaPlayer = _mediaPlayer,
-                Dock = DockStyle.Fill
-            };
+                SafeUpdateUI(() =>
+                {
+                    picImagemPreview.Image = null;
+                    lblImagem.Text = "Nenhuma imagem configurada";
+                });
+                return;
+            }
 
-            panelVideo.Controls.Add(_videoView);
-
-            string videoFile = caminhoVideoPadrao;
-
-            if (File.Exists(videoFile))
+            try
             {
-                var media = new Media(_libVLC, videoFile, FromType.FromPath);
-                _mediaPlayer.Media = media;
-                // Não chama Play() -> vídeo pronto, mas só toca quando quiser
+                using (var img = await Task.Run(() => Image.FromFile(caminhoImagemPadrao)))
+                {
+                    SafeUpdateUI(() =>
+                    {
+                        if (picImagemPreview.Image != null)
+                        {
+                            picImagemPreview.Image.Dispose();
+                        }
+                        picImagemPreview.Image = new Bitmap(img);
+                        lblImagem.Text = $"Imagem: {Path.GetFileName(caminhoImagemPadrao)}";
+                    });
+                }
+            }
+            catch (Exception ex) when (ex is OutOfMemoryException || ex is ArgumentException)
+            {
+                File.Delete(caminhoImagemPadrao);
+                SafeUpdateUI(() =>
+                {
+                    picImagemPreview.Image = null;
+                    lblImagem.Text = "Imagem inválida - removida";
+                });
+            }
+            catch (Exception ex)
+            {
+                SafeUpdateUI(() =>
+                {
+                    MessageBox.Show($"Erro ao carregar imagem: {ex.Message}", "Erro",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                });
+            }
+        }
+
+        private async Task ConfigurarPlayerVideoAsync()
+        {
+            Label loadingLabel = null;
+
+            SafeUpdateUI(() =>
+            {
+                loadingLabel = new Label
+                {
+                    Text = "Preparando player de vídeo...",
+                    Dock = DockStyle.Fill,
+                    TextAlign = ContentAlignment.MiddleCenter,
+                    Font = new Font("Arial", 10, FontStyle.Italic)
+                };
+                panelVideo.Controls.Add(loadingLabel);
+                lblVideo.Text = "Carregando...";
+            });
+
+            try
+            {
+                if (!File.Exists(caminhoVideoPadrao))
+                {
+                    SafeUpdateUI(() =>
+                    {
+                        panelVideo.Controls.Remove(loadingLabel);
+                        var noVideoLabel = new Label
+                        {
+                            Text = "Nenhum vídeo configurado",
+                            Dock = DockStyle.Fill,
+                            TextAlign = ContentAlignment.MiddleCenter
+                        };
+                        panelVideo.Controls.Add(noVideoLabel);
+                        lblVideo.Text = "Nenhum vídeo configurado";
+                    });
+                    return;
+                }
+
+                await Task.Run(() => Core.Initialize());
+
+                SafeUpdateUI(() =>
+                {
+                    _libVLC = new LibVLC(enableDebugLogs: false);
+                    _mediaPlayer = new LibVLCSharp.Shared.MediaPlayer(_libVLC)
+                    {
+                        EnableHardwareDecoding = true
+                    };
+
+                    _videoView = new VideoView
+                    {
+                        MediaPlayer = _mediaPlayer,
+                        Dock = DockStyle.Fill
+                    };
+
+                    panelVideo.Controls.Remove(loadingLabel);
+                    panelVideo.Controls.Add(_videoView);
+
+                    var media = new Media(_libVLC, caminhoVideoPadrao, FromType.FromPath);
+                    _mediaPlayer.Media = media;
+                    _videoCarregado = true;
+                    lblVideo.Text = $"Vídeo: {Path.GetFileName(caminhoVideoPadrao)}";
+
+                    btnPlayPause.Enabled = true;
+                    btnRestart.Enabled = true;
+                });
+            }
+            catch (Exception ex)
+            {
+                SafeUpdateUI(() =>
+                {
+                    panelVideo.Controls.Remove(loadingLabel);
+                    MessageBox.Show($"Erro ao carregar player de vídeo: {ex.Message}", "Erro",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                });
+            }
+        }
+
+        private void SafeUpdateUI(Action action)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(action);
             }
             else
             {
-                MessageBox.Show("Vídeo não encontrado!");
+                // Verifica se o controle ainda está válido
+                if (!this.IsDisposed && this.IsHandleCreated)
+                {
+                    action();
+                }
             }
         }
 
         private void btnPlayPause_Click(object sender, EventArgs e)
         {
-            if (_mediaPlayer == null || _mediaPlayer.Media == null)
+            if (!_videoCarregado || _mediaPlayer == null)
             {
-                MessageBox.Show("Nenhum vídeo carregado!");
+                MessageBox.Show("Nenhum vídeo carregado ou player não está pronto!");
                 return;
             }
 
@@ -78,65 +189,18 @@ namespace FrizonWhatsappSender
 
         private void btnRestart_Click(object sender, EventArgs e)
         {
-            if (_mediaPlayer == null || _mediaPlayer.Media == null)
+            if (!_videoCarregado || _mediaPlayer == null)
             {
-                MessageBox.Show("Nenhum vídeo carregado!");
+                MessageBox.Show("Nenhum vídeo carregado ou player não está pronto!");
                 return;
             }
 
-            // Reinicia o vídeo
             _mediaPlayer.Stop();
             _mediaPlayer.Play();
             btnPlayPause.Text = "⏸ Pause";
         }
 
-        private void CarregarMidias()
-        {
-            // Remove a criação automática de arquivos vazios
-            // Apenas verifica se existem e carrega se forem válidos
-
-            // Para a imagem
-            if (File.Exists(caminhoImagemPadrao))
-            {
-                try
-                {
-                    // Libera a imagem anterior se existir
-                    if (picImagemPreview.Image != null)
-                    {
-                        picImagemPreview.Image.Dispose();
-                        picImagemPreview.Image = null;
-                    }
-
-                    // Carrega a nova imagem com tratamento de erros
-                    using (var img = Image.FromFile(caminhoImagemPadrao))
-                    {
-                        picImagemPreview.Image = new Bitmap(img); // Cria uma cópia
-                    }
-                }
-                catch (Exception ex) when (ex is OutOfMemoryException || ex is ArgumentException)
-                {
-                    // Arquivo corrompido ou não é imagem válida
-                    File.Delete(caminhoImagemPadrao);
-                    picImagemPreview.Image = null;
-                }
-            }
-            else
-            {
-                picImagemPreview.Image = null;
-            }
-
-            lblImagem.Text = File.Exists(caminhoImagemPadrao)
-                ? $"Imagem: {Path.GetFileName(caminhoImagemPadrao)}"
-                : "Nenhuma imagem configurada";
-
-            lblVideo.Text = File.Exists(caminhoVideoPadrao)
-                ? $"Vídeo: {Path.GetFileName(caminhoVideoPadrao)}"
-                : "Nenhum vídeo configurado";
-        }
-
-
-
-        private void btnSubstituirImagem_Click(object sender, EventArgs e)
+        private async void btnSubstituirImagem_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
@@ -145,9 +209,8 @@ namespace FrizonWhatsappSender
                 {
                     try
                     {
-                        // Substitui o arquivo existente
-                        File.Copy(dialog.FileName, caminhoImagemPadrao, overwrite: true);
-                        CarregarMidias();
+                        await Task.Run(() => File.Copy(dialog.FileName, caminhoImagemPadrao, true));
+                        await CarregarImagemAsync();
                     }
                     catch (Exception ex)
                     {
@@ -158,7 +221,7 @@ namespace FrizonWhatsappSender
             }
         }
 
-        private void btnSubstituirVideo_Click(object sender, EventArgs e)
+        private async void btnSubstituirVideo_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
@@ -167,10 +230,20 @@ namespace FrizonWhatsappSender
                 {
                     try
                     {
-                        // Substitui o arquivo existente
-                        File.Copy(dialog.FileName, caminhoVideoPadrao, overwrite: true);
-                        CarregarMidias();
-                        RecarregarVideo();
+                        await Task.Run(() => File.Copy(dialog.FileName, caminhoVideoPadrao, true));
+
+                        if (_videoCarregado)
+                        {
+                            SafeUpdateUI(() =>
+                            {
+                                lblVideo.Text = $"Vídeo: {Path.GetFileName(caminhoVideoPadrao)}";
+                                RecarregarVideo();
+                            });
+                        }
+                        else
+                        {
+                            await ConfigurarPlayerVideoAsync();
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -183,18 +256,13 @@ namespace FrizonWhatsappSender
 
         private void RecarregarVideo()
         {
-            if (_mediaPlayer != null)
-            {
-                _mediaPlayer.Stop();
+            if (!_videoCarregado) return;
 
-                var media = new Media(_libVLC, caminhoVideoPadrao, FromType.FromPath);
-                _mediaPlayer.Media = media;
-
-                btnPlayPause.Text = "Play"; // Reseta o botão
-            }
+            _mediaPlayer.Stop();
+            var media = new Media(_libVLC, caminhoVideoPadrao, FromType.FromPath);
+            _mediaPlayer.Media = media;
+            btnPlayPause.Text = "▶ Play";
         }
-
-
 
         private void btnRemoverImagem_Click(object sender, EventArgs e)
         {
@@ -203,12 +271,11 @@ namespace FrizonWhatsappSender
                 try
                 {
                     File.Delete(caminhoImagemPadrao);
-                    if (picImagemPreview.Image != null)
+                    SafeUpdateUI(() =>
                     {
-                        picImagemPreview.Image.Dispose();
                         picImagemPreview.Image = null;
-                    }
-                    lblImagem.Text = "Nenhuma imagem configurada";
+                        lblImagem.Text = "Nenhuma imagem configurada";
+                    });
                 }
                 catch (Exception ex)
                 {
@@ -225,7 +292,31 @@ namespace FrizonWhatsappSender
                 try
                 {
                     File.Delete(caminhoVideoPadrao);
-                    lblVideo.Text = "Nenhum vídeo configurado";
+
+                    SafeUpdateUI(() =>
+                    {
+                        lblVideo.Text = "Nenhum vídeo configurado";
+
+                        if (_videoCarregado)
+                        {
+                            _mediaPlayer.Stop();
+                            panelVideo.Controls.Remove(_videoView);
+                            _videoView.Dispose();
+                            _videoView = null;
+                            _videoCarregado = false;
+
+                            var noVideoLabel = new Label
+                            {
+                                Text = "Nenhum vídeo configurado",
+                                Dock = DockStyle.Fill,
+                                TextAlign = ContentAlignment.MiddleCenter
+                            };
+                            panelVideo.Controls.Add(noVideoLabel);
+
+                            btnPlayPause.Enabled = false;
+                            btnRestart.Enabled = false;
+                        }
+                    });
                 }
                 catch (Exception ex)
                 {
@@ -237,15 +328,18 @@ namespace FrizonWhatsappSender
 
         private void frmConfigMidia_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (_mediaPlayer != null)
+            if (_videoCarregado)
             {
-                _mediaPlayer.Stop();
-                _mediaPlayer.Dispose();
+                _mediaPlayer?.Stop();
+                _mediaPlayer?.Dispose();
+                _videoView?.Dispose();
+                _libVLC?.Dispose();
             }
 
-            if (_libVLC != null)
+            if (picImagemPreview.Image != null)
             {
-                _libVLC.Dispose();
+                picImagemPreview.Image.Dispose();
+                picImagemPreview.Image = null;
             }
         }
     }

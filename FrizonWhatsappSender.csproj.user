@@ -13,6 +13,12 @@
     <Compile Update="frmConfigMidia.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="planilhaModelo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="SettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="SplashForm.cs">
       <SubType>Form</SubType>
     </Compile>

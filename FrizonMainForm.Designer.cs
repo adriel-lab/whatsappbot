@@ -17,7 +17,6 @@
 
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
             btnSelecionarPlanilha = new Button();
             btnIniciar = new Button();
             btnParar = new Button();
@@ -26,27 +25,35 @@
             lblTotalContatos = new Label();
             lblEnviados = new Label();
             lblStatus = new Label();
-            picQRCodeInfo = new PictureBox();
             btnPularAutenticacao = new Button();
             panelControles = new Panel();
+            progressBar = new ProgressBar();
+            btnPlanilha = new Button();
+            btnConfig = new Button();
+            btnMidia = new Button();
+            checkBoxEnviarVideo = new CheckBox();
+            checkBoxEnviarImagem = new CheckBox();
             panelLog = new Panel();
             lblTitulo = new Label();
             panelMensagens = new Panel();
             groupBoxMensagens = new GroupBox();
+            lblMediaOptions = new Label();
             buttonHelpMensagens = new Button();
             txtMensagemPersonalizada = new TextBox();
             chkUsarMensagemPersonalizada = new CheckBox();
-            toolTip1 = new ToolTip(components);
-            ((System.ComponentModel.ISupportInitialize)picQRCodeInfo).BeginInit();
+            panelStatus = new Panel();
+            button1 = new Button();
             panelControles.SuspendLayout();
             panelLog.SuspendLayout();
             panelMensagens.SuspendLayout();
             groupBoxMensagens.SuspendLayout();
+            panelStatus.SuspendLayout();
             SuspendLayout();
             // 
             // btnSelecionarPlanilha
             // 
             btnSelecionarPlanilha.BackColor = Color.FromArgb(82, 112, 79);
+            btnSelecionarPlanilha.FlatAppearance.BorderSize = 0;
             btnSelecionarPlanilha.FlatStyle = FlatStyle.Flat;
             btnSelecionarPlanilha.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnSelecionarPlanilha.ForeColor = Color.White;
@@ -61,6 +68,7 @@
             // btnIniciar
             // 
             btnIniciar.BackColor = Color.FromArgb(82, 112, 79);
+            btnIniciar.FlatAppearance.BorderSize = 0;
             btnIniciar.FlatStyle = FlatStyle.Flat;
             btnIniciar.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnIniciar.ForeColor = Color.White;
@@ -75,6 +83,7 @@
             // btnParar
             // 
             btnParar.BackColor = Color.FromArgb(204, 85, 67);
+            btnParar.FlatAppearance.BorderSize = 0;
             btnParar.FlatStyle = FlatStyle.Flat;
             btnParar.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnParar.ForeColor = Color.White;
@@ -88,16 +97,18 @@
             // 
             // txtCaminhoPlanilha
             // 
+            txtCaminhoPlanilha.BackColor = Color.WhiteSmoke;
             txtCaminhoPlanilha.BorderStyle = BorderStyle.FixedSingle;
+            txtCaminhoPlanilha.Font = new Font("Segoe UI", 8.25F);
             txtCaminhoPlanilha.Location = new Point(20, 50);
             txtCaminhoPlanilha.Name = "txtCaminhoPlanilha";
             txtCaminhoPlanilha.ReadOnly = true;
-            txtCaminhoPlanilha.Size = new Size(180, 23);
+            txtCaminhoPlanilha.Size = new Size(180, 22);
             txtCaminhoPlanilha.TabIndex = 3;
             // 
             // txtLog
             // 
-            txtLog.BackColor = Color.FromArgb(240, 240, 240);
+            txtLog.BackColor = Color.White;
             txtLog.BorderStyle = BorderStyle.None;
             txtLog.Dock = DockStyle.Fill;
             txtLog.Font = new Font("Consolas", 9F);
@@ -113,7 +124,7 @@
             lblTotalContatos.AutoSize = true;
             lblTotalContatos.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblTotalContatos.ForeColor = Color.FromArgb(82, 112, 79);
-            lblTotalContatos.Location = new Point(20, 230);
+            lblTotalContatos.Location = new Point(20, 235);
             lblTotalContatos.Name = "lblTotalContatos";
             lblTotalContatos.Size = new Size(98, 15);
             lblTotalContatos.TabIndex = 10;
@@ -141,20 +152,10 @@
             lblStatus.TabIndex = 12;
             lblStatus.Text = "Status: Inativo";
             // 
-            // picQRCodeInfo
-            // 
-            picQRCodeInfo.BackColor = Color.White;
-            picQRCodeInfo.BorderStyle = BorderStyle.FixedSingle;
-            picQRCodeInfo.Location = new Point(20, 288);
-            picQRCodeInfo.Name = "picQRCodeInfo";
-            picQRCodeInfo.Size = new Size(180, 195);
-            picQRCodeInfo.TabIndex = 13;
-            picQRCodeInfo.TabStop = false;
-            picQRCodeInfo.Visible = false;
-            // 
             // btnPularAutenticacao
             // 
             btnPularAutenticacao.BackColor = Color.FromArgb(82, 112, 79);
+            btnPularAutenticacao.FlatAppearance.BorderSize = 0;
             btnPularAutenticacao.FlatStyle = FlatStyle.Flat;
             btnPularAutenticacao.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnPularAutenticacao.ForeColor = Color.White;
@@ -169,6 +170,11 @@
             // panelControles
             // 
             panelControles.BackColor = Color.White;
+            panelControles.Controls.Add(button1);
+            panelControles.Controls.Add(progressBar);
+            panelControles.Controls.Add(btnPlanilha);
+            panelControles.Controls.Add(btnConfig);
+            panelControles.Controls.Add(btnMidia);
             panelControles.Controls.Add(txtCaminhoPlanilha);
             panelControles.Controls.Add(btnSelecionarPlanilha);
             panelControles.Controls.Add(btnIniciar);
@@ -177,11 +183,88 @@
             panelControles.Controls.Add(lblTotalContatos);
             panelControles.Controls.Add(lblStatus);
             panelControles.Controls.Add(lblEnviados);
-            panelControles.Controls.Add(picQRCodeInfo);
             panelControles.Location = new Point(20, 70);
             panelControles.Name = "panelControles";
-            panelControles.Size = new Size(220, 500);
+            panelControles.Size = new Size(220, 518);
             panelControles.TabIndex = 15;
+            // 
+            // progressBar
+            // 
+            progressBar.ForeColor = Color.FromArgb(82, 112, 79);
+            progressBar.Location = new Point(20, 300);
+            progressBar.Name = "progressBar";
+            progressBar.Size = new Size(180, 10);
+            progressBar.Style = ProgressBarStyle.Continuous;
+            progressBar.TabIndex = 18;
+            // 
+            // btnPlanilha
+            // 
+            btnPlanilha.BackColor = Color.FromArgb(82, 112, 79);
+            btnPlanilha.FlatAppearance.BorderSize = 0;
+            btnPlanilha.FlatStyle = FlatStyle.Flat;
+            btnPlanilha.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnPlanilha.ForeColor = Color.White;
+            btnPlanilha.Location = new Point(20, 432);
+            btnPlanilha.Name = "btnPlanilha";
+            btnPlanilha.Size = new Size(180, 35);
+            btnPlanilha.TabIndex = 17;
+            btnPlanilha.Text = "PLANILHA";
+            btnPlanilha.UseVisualStyleBackColor = false;
+            btnPlanilha.Click += btnPlanilha_Click;
+            // 
+            // btnConfig
+            // 
+            btnConfig.BackColor = Color.FromArgb(82, 112, 79);
+            btnConfig.FlatAppearance.BorderSize = 0;
+            btnConfig.FlatStyle = FlatStyle.Flat;
+            btnConfig.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnConfig.ForeColor = Color.White;
+            btnConfig.Location = new Point(20, 391);
+            btnConfig.Name = "btnConfig";
+            btnConfig.Size = new Size(180, 35);
+            btnConfig.TabIndex = 16;
+            btnConfig.Text = "CONFIGURAÇÕES";
+            btnConfig.UseVisualStyleBackColor = false;
+            btnConfig.Click += btnConfig_Click;
+            // 
+            // btnMidia
+            // 
+            btnMidia.BackColor = Color.FromArgb(82, 112, 79);
+            btnMidia.FlatAppearance.BorderSize = 0;
+            btnMidia.FlatStyle = FlatStyle.Flat;
+            btnMidia.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnMidia.ForeColor = Color.White;
+            btnMidia.Location = new Point(20, 350);
+            btnMidia.Name = "btnMidia";
+            btnMidia.Size = new Size(180, 35);
+            btnMidia.TabIndex = 15;
+            btnMidia.Text = "MÍDIA";
+            btnMidia.UseVisualStyleBackColor = false;
+            btnMidia.Click += btnMidia_Click;
+            // 
+            // checkBoxEnviarVideo
+            // 
+            checkBoxEnviarVideo.AutoSize = true;
+            checkBoxEnviarVideo.Font = new Font("Segoe UI", 9F);
+            checkBoxEnviarVideo.ForeColor = Color.FromArgb(64, 64, 64);
+            checkBoxEnviarVideo.Location = new Point(175, 32);
+            checkBoxEnviarVideo.Name = "checkBoxEnviarVideo";
+            checkBoxEnviarVideo.Size = new Size(96, 19);
+            checkBoxEnviarVideo.TabIndex = 16;
+            checkBoxEnviarVideo.Text = "Enviar Vídeo?";
+            checkBoxEnviarVideo.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxEnviarImagem
+            // 
+            checkBoxEnviarImagem.AutoSize = true;
+            checkBoxEnviarImagem.Font = new Font("Segoe UI", 9F);
+            checkBoxEnviarImagem.ForeColor = Color.FromArgb(64, 64, 64);
+            checkBoxEnviarImagem.Location = new Point(277, 32);
+            checkBoxEnviarImagem.Name = "checkBoxEnviarImagem";
+            checkBoxEnviarImagem.Size = new Size(110, 19);
+            checkBoxEnviarImagem.TabIndex = 15;
+            checkBoxEnviarImagem.Text = "Enviar Imagem?";
+            checkBoxEnviarImagem.UseVisualStyleBackColor = true;
             // 
             // panelLog
             // 
@@ -197,8 +280,8 @@
             // 
             lblTitulo.AutoSize = true;
             lblTitulo.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
-            lblTitulo.ForeColor = Color.FromArgb(82, 112, 79);
-            lblTitulo.Location = new Point(20, 0);
+            lblTitulo.ForeColor = Color.White;
+            lblTitulo.Location = new Point(20, 20);
             lblTitulo.Name = "lblTitulo";
             lblTitulo.Size = new Size(296, 32);
             lblTitulo.TabIndex = 17;
@@ -210,44 +293,71 @@
             panelMensagens.Controls.Add(groupBoxMensagens);
             panelMensagens.Location = new Point(260, 426);
             panelMensagens.Name = "panelMensagens";
-            panelMensagens.Size = new Size(480, 144);
+            panelMensagens.Size = new Size(480, 162);
             panelMensagens.TabIndex = 18;
             // 
             // groupBoxMensagens
             // 
-            groupBoxMensagens.BackColor = Color.WhiteSmoke;
+            groupBoxMensagens.BackColor = Color.Transparent;
+            groupBoxMensagens.Controls.Add(lblMediaOptions);
+            groupBoxMensagens.Controls.Add(checkBoxEnviarImagem);
+            groupBoxMensagens.Controls.Add(checkBoxEnviarVideo);
             groupBoxMensagens.Controls.Add(buttonHelpMensagens);
             groupBoxMensagens.Controls.Add(txtMensagemPersonalizada);
             groupBoxMensagens.Controls.Add(chkUsarMensagemPersonalizada);
+            groupBoxMensagens.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            groupBoxMensagens.ForeColor = Color.FromArgb(82, 112, 79);
             groupBoxMensagens.Location = new Point(10, 3);
             groupBoxMensagens.Name = "groupBoxMensagens";
-            groupBoxMensagens.Size = new Size(460, 124);
+            groupBoxMensagens.Size = new Size(460, 145);
             groupBoxMensagens.TabIndex = 0;
             groupBoxMensagens.TabStop = false;
-            groupBoxMensagens.Text = "Mensagens";
+            groupBoxMensagens.Text = "Configuração de Mensagens";
+            // 
+            // lblMediaOptions
+            // 
+            lblMediaOptions.AutoSize = true;
+            lblMediaOptions.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
+            lblMediaOptions.ForeColor = Color.FromArgb(82, 112, 79);
+            lblMediaOptions.Location = new Point(10, 17);
+            lblMediaOptions.Name = "lblMediaOptions";
+            lblMediaOptions.Size = new Size(97, 13);
+            lblMediaOptions.TabIndex = 17;
+            lblMediaOptions.Text = "Opções de Mídia:";
             // 
             // buttonHelpMensagens
             // 
+            buttonHelpMensagens.BackColor = Color.FromArgb(82, 112, 79);
+            buttonHelpMensagens.FlatAppearance.BorderSize = 0;
+            buttonHelpMensagens.FlatStyle = FlatStyle.Flat;
+            buttonHelpMensagens.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            buttonHelpMensagens.ForeColor = Color.White;
             buttonHelpMensagens.Location = new Point(423, 14);
             buttonHelpMensagens.Name = "buttonHelpMensagens";
             buttonHelpMensagens.Size = new Size(27, 23);
             buttonHelpMensagens.TabIndex = 2;
             buttonHelpMensagens.Text = "?";
-            buttonHelpMensagens.UseVisualStyleBackColor = true;
+            buttonHelpMensagens.UseVisualStyleBackColor = false;
             buttonHelpMensagens.Click += buttonHelpMensagens_Click;
             // 
             // txtMensagemPersonalizada
             // 
-            txtMensagemPersonalizada.Location = new Point(10, 43);
+            txtMensagemPersonalizada.BackColor = Color.WhiteSmoke;
+            txtMensagemPersonalizada.BorderStyle = BorderStyle.FixedSingle;
+            txtMensagemPersonalizada.Font = new Font("Segoe UI", 9F);
+            txtMensagemPersonalizada.Location = new Point(10, 51);
             txtMensagemPersonalizada.Multiline = true;
             txtMensagemPersonalizada.Name = "txtMensagemPersonalizada";
-            txtMensagemPersonalizada.Size = new Size(440, 70);
+            txtMensagemPersonalizada.ScrollBars = ScrollBars.Vertical;
+            txtMensagemPersonalizada.Size = new Size(440, 85);
             txtMensagemPersonalizada.TabIndex = 1;
             // 
             // chkUsarMensagemPersonalizada
             // 
             chkUsarMensagemPersonalizada.AutoSize = true;
-            chkUsarMensagemPersonalizada.Location = new Point(13, 22);
+            chkUsarMensagemPersonalizada.Font = new Font("Segoe UI", 9F);
+            chkUsarMensagemPersonalizada.ForeColor = Color.FromArgb(64, 64, 64);
+            chkUsarMensagemPersonalizada.Location = new Point(13, 32);
             chkUsarMensagemPersonalizada.Name = "chkUsarMensagemPersonalizada";
             chkUsarMensagemPersonalizada.Size = new Size(156, 19);
             chkUsarMensagemPersonalizada.TabIndex = 0;
@@ -255,29 +365,55 @@
             chkUsarMensagemPersonalizada.UseVisualStyleBackColor = true;
             chkUsarMensagemPersonalizada.CheckedChanged += chkUsarMensagemPersonalizada_CheckedChanged;
             // 
+            // panelStatus
+            // 
+            panelStatus.BackColor = Color.FromArgb(82, 112, 79);
+            panelStatus.Controls.Add(lblTitulo);
+            panelStatus.Dock = DockStyle.Top;
+            panelStatus.Location = new Point(0, 0);
+            panelStatus.Name = "panelStatus";
+            panelStatus.Size = new Size(760, 60);
+            panelStatus.TabIndex = 19;
+            // 
+            // button1
+            // 
+            button1.BackColor = Color.FromArgb(82, 112, 79);
+            button1.FlatAppearance.BorderSize = 0;
+            button1.FlatStyle = FlatStyle.Flat;
+            button1.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            button1.ForeColor = Color.White;
+            button1.Location = new Point(20, 473);
+            button1.Name = "button1";
+            button1.Size = new Size(180, 35);
+            button1.TabIndex = 19;
+            button1.Text = "SALVAR LOG";
+            button1.UseVisualStyleBackColor = false;
+            button1.Click += button1_Click;
+            // 
             // FrizonMainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(250, 250, 250);
+            BackColor = Color.FromArgb(240, 240, 240);
             ClientSize = new Size(760, 600);
             Controls.Add(panelMensagens);
-            Controls.Add(lblTitulo);
             Controls.Add(panelLog);
             Controls.Add(panelControles);
+            Controls.Add(panelStatus);
+            Font = new Font("Segoe UI", 9F);
             MinimumSize = new Size(776, 639);
             Name = "FrizonMainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Frizon WhatsApp Sender";
-            ((System.ComponentModel.ISupportInitialize)picQRCodeInfo).EndInit();
             panelControles.ResumeLayout(false);
             panelControles.PerformLayout();
             panelLog.ResumeLayout(false);
             panelMensagens.ResumeLayout(false);
             groupBoxMensagens.ResumeLayout(false);
             groupBoxMensagens.PerformLayout();
+            panelStatus.ResumeLayout(false);
+            panelStatus.PerformLayout();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
@@ -290,16 +426,23 @@
         private Label lblTotalContatos;
         private Label lblEnviados;
         private Label lblStatus;
-        private PictureBox picQRCodeInfo;
         private Button btnPularAutenticacao;
         private Panel panelControles;
+        private CheckBox checkBoxEnviarVideo;
+        private CheckBox checkBoxEnviarImagem;
         private Panel panelLog;
         private Label lblTitulo;
         private Panel panelMensagens;
         private GroupBox groupBoxMensagens;
+        private Button buttonHelpMensagens;
         private TextBox txtMensagemPersonalizada;
         private CheckBox chkUsarMensagemPersonalizada;
-        private ToolTip toolTip1;
-        private Button buttonHelpMensagens;
+        private Button btnMidia;
+        private Button btnConfig;
+        private Button btnPlanilha;
+        private Panel panelStatus;
+        private Label lblMediaOptions;
+        private ProgressBar progressBar;
+        private Button button1;
     }
 }

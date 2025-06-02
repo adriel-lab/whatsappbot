@@ -2,10 +2,11 @@ namespace FrizonWhatsappSender
 {
     public partial class Form1 : Form
     {
+        private AppSettings settings = new AppSettings();
         public Form1()
         {
             InitializeComponent();
-        
+
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -46,6 +47,12 @@ namespace FrizonWhatsappSender
         {
             frmConfigMidia frmConfigMidiaForm = new frmConfigMidia();
             frmConfigMidiaForm.Show(); // ou frizonForm.ShowDialog(); se quiser modal
+        }
+
+        private void lblConfig_Click(object sender, EventArgs e)
+        {
+            SettingsForm frmConfigTimes = new SettingsForm(settings);
+            frmConfigTimes.Show();
         }
     }
 }
