@@ -14,55 +14,7 @@ namespace FrizonWhatsappSender
 {
     public partial class FrizonMainForm : Form
     {
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
-
-        [DllImport("user32.dll")]
-        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
-
-        [DllImport("user32.dll")]
-        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-
-        private const int GWL_STYLE = -16;
-        private const int WS_CAPTION = 0x00C00000;
-        private const int WS_THICKFRAME = 0x00040000;
-        private const int WS_MINIMIZEBOX = 0x00020000;
-        private const int WS_MAXIMIZEBOX = 0x00010000;
-        private const int WS_SYSMENU = 0x00080000;
-
-        private void RemoveChromeTitleBar()
-        {
-            try
-            {
-                // Espera até que a janela do Chrome esteja disponível
-                Thread.Sleep(2000);
-
-                // Encontra a janela principal do Chrome
-                IntPtr chromeHandle = FindWindow("Chrome_WidgetWin_1", null);
-
-                if (chromeHandle != IntPtr.Zero)
-                {
-                    // Obtém o estilo atual da janela
-                    int style = GetWindowLong(chromeHandle, GWL_STYLE);
-
-                    // Remove todos os elementos da barra de título
-                    style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
-
-                    // Aplica o novo estilo
-                    SetWindowLong(chromeHandle, GWL_STYLE, style);
-
-                    // Opcional: Força redesenho da janela
-                    // SetWindowPos(chromeHandle, IntPtr.Zero, 0, 0, 0, 0, 
-                    //     SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
-                }
-            }
-            catch (Exception ex)
-            {
-                AppendToLog($"⚠️ Não foi possível modificar a janela: {ex.Message}");
-            }
-        }
-
+        private AppSettings settings = new AppSettings();
 
         private IWebDriver driver;
         private List<Contato> contatos;
@@ -72,9 +24,12 @@ namespace FrizonWhatsappSender
         public FrizonMainForm()
         {
             InitializeComponent();
+            settings.Load();
             btnParar.Enabled = false;
             btnIniciar.Enabled = false;
             chkUsarMensagemPersonalizada_CheckedChanged(null, null);
+            checkBoxEnviarImagem.CheckedChanged += CheckBoxEnviarMidia_CheckedChanged;
+            checkBoxEnviarVideo.CheckedChanged += CheckBoxEnviarMidia_CheckedChanged;
         }
 
         private void SafeUpdateUI(Action action)
@@ -88,14 +43,30 @@ namespace FrizonWhatsappSender
                 action();
             }
         }
+        private void CheckBoxEnviarMidia_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox currentCheckBox = sender as CheckBox;
 
+            if (currentCheckBox == checkBoxEnviarImagem && checkBoxEnviarImagem.Checked)
+            {
+                checkBoxEnviarVideo.Checked = false;
+            }
+            else if (currentCheckBox == checkBoxEnviarVideo && checkBoxEnviarVideo.Checked)
+            {
+                checkBoxEnviarImagem.Checked = false;
+            }
+        }
         private void AppendToLog(string message)
         {
             SafeUpdateUI(() =>
             {
-                txtLog.AppendText($"[{DateTime.Now:HH:mm:ss}] {message}\r\n");
+                if (!txtLog.IsDisposed && !txtLog.Disposing)
+                {
+                    txtLog.AppendText($"[{DateTime.Now:HH:mm:ss}] {message}\r\n");
+                }
             });
         }
+
 
         private void btnSelecionarPlanilha_Click(object sender, EventArgs e)
         {
@@ -229,6 +200,13 @@ namespace FrizonWhatsappSender
         private void btnIniciar_Click(object sender, EventArgs e)
         {
 
+            if (checkBoxEnviarImagem.Checked && checkBoxEnviarVideo.Checked)
+            {
+                MessageBox.Show("Selecione apenas um tipo de mídia (imagem OU vídeo)!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+
             if (chkUsarMensagemPersonalizada.Checked && string.IsNullOrWhiteSpace(txtMensagemPersonalizada.Text))
             {
                 MessageBox.Show("Por favor, insira a mensagem personalizada!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -359,7 +337,7 @@ namespace FrizonWhatsappSender
                         // Pausa maior apenas entre contatos diferentes
                         if (isRunning && totalEnviados < contatos.Count)
                         {
-                            int delay = new Random().Next(60, 121);
+                            int delay = new Random().Next(settings.MinDelayBetweenContacts, settings.MaxDelayBetweenContacts + 1);
                             AppendToLog($"⏳ Aguardando {delay}s antes do próximo envio...");
                             Thread.Sleep(delay * 1000);
                         }
@@ -371,7 +349,7 @@ namespace FrizonWhatsappSender
                         // Pausa maior em caso de erro
                         if (isRunning)
                         {
-                            Thread.Sleep(15000); // 15 segundos antes de tentar o próximo
+                            Thread.Sleep(settings.ErrorDelay * 1000); // 15 segundos antes de tentar o próximo
                         }
                     }
                 }
@@ -396,6 +374,100 @@ namespace FrizonWhatsappSender
                 FinalizarProcesso();
             }
         }
+
+        private void EnviarArquivoMidia()
+        {
+            try
+            {
+                int delayAbrirAnexos = 2000;
+                int delaySelecionarAnexo = 3000;
+                int delayCarregarArquivo = 0;
+                int delayParaVideo = (settings.delayFoto * 1000);
+                int delayParaFoto = (settings.delayVideo * 1000);
+
+                if (checkBoxEnviarImagem.Checked || checkBoxEnviarVideo.Checked)
+                {
+
+                    if (checkBoxEnviarImagem.Checked)
+                    {
+                        delayCarregarArquivo = delayParaFoto;
+                    }
+                    else if (checkBoxEnviarVideo.Checked)
+                    {
+                        delayCarregarArquivo = delayParaVideo;
+                    }
+
+
+
+                    IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
+
+                    // Passo 1: Abrir menu de anexos
+                    js.ExecuteScript("document.querySelector('span[data-icon=\"plus-rounded\"]').click();");
+                    AppendToLog("✅ Clique no botão de anexos.");
+                    Thread.Sleep(delayAbrirAnexos);
+
+                    // Passo 2: Clicar no botão 'Fotos e Vídeos'
+                    string jsClickFotosVideos = @"
+                const allButtons = document.querySelectorAll('span, div, button, li');
+                const fotosVideosBtn = [...allButtons].find(el => {
+                    return el.textContent.trim().toLowerCase().includes('fotos e vídeos') 
+                           && el.closest('[role=""button""]');
+                });
+                if (fotosVideosBtn) {
+                    fotosVideosBtn.closest('[role=""button""]').click();
+                } else {
+                    console.log('Botão ""Fotos e vídeos"" não encontrado.');
+                }";
+                    js.ExecuteScript(jsClickFotosVideos);
+                    AppendToLog("✅ Clique no botão de fotos e vídeos.");
+                    Thread.Sleep(delaySelecionarAnexo);
+
+                    // Passo 3: Upload do arquivo no input correto (visível e recém-criado)
+                    string caminhoArquivo = checkBoxEnviarImagem.Checked
+                        ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Media", "imagem_padrao.jpg")
+                        : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Media", "video_padrao.mp4");
+
+                    // Procurar o botão de "Fotos e vídeos" e acessar o input dentro dele
+                    var botoes = driver.FindElements(By.CssSelector("li[role='button']"));
+                    IWebElement botaoFotoVideo = botoes.FirstOrDefault(el => el.Text.ToLower().Contains("fotos e vídeos"));
+
+                    if (botaoFotoVideo != null)
+                    {
+                        IWebElement inputFile = botaoFotoVideo.FindElement(By.CssSelector("input[type='file']"));
+                        inputFile.SendKeys(caminhoArquivo);
+                        AppendToLog($"✅ Arquivo anexado ao input correto: {Path.GetFileName(caminhoArquivo)}");
+                    }
+                    else
+                    {
+                        AppendToLog("❌ Botão 'Fotos e vídeos' não encontrado para upload.");
+                        return;
+                    }
+
+                    Thread.Sleep(delayCarregarArquivo);
+
+                    // Passo 4: Enviar
+                    try
+                    {
+                        IWebElement btnEnviar = driver.FindElement(By.CssSelector("div[role='button'][aria-label='Enviar']"));
+                        btnEnviar.Click();
+                        AppendToLog("✅ Clique no botão Enviar.");
+                    }
+                    catch (NoSuchElementException)
+                    {
+                        AppendToLog("⚠️ Botão Enviar não encontrado, pode ter sido enviado automaticamente.");
+                    }
+
+                    Thread.Sleep(3000);
+                }
+            }
+            catch (Exception ex)
+            {
+                AppendToLog($"❌ Falha ao enviar arquivo: {ex.Message}");
+                throw;
+            }
+        }
+
+
 
         private void EnviarMensagem(Contato contato)
         {
@@ -435,14 +507,22 @@ namespace FrizonWhatsappSender
                     AppendToLog($"↗️ Abrindo chat com {contato.Nome}");
 
                     // 2. Espera fixa de 10 segundos para carregamento
-                    AppendToLog("⏳ Aguardando 10 segundos para carregamento...");
-                    Thread.Sleep(10000);
+                    AppendToLog($"⏳ Aguardando {settings.InitialLoadDelay} segundos para carregamento...");
+                    Thread.Sleep(settings.InitialLoadDelay * 1000);
 
-                    // 3. Envia a mensagem via JavaScript clicando no botão de enviar
-                    IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
+                    if (checkBoxEnviarImagem.Checked || checkBoxEnviarVideo.Checked)
+                    {
+                        EnviarArquivoMidia();
+                    }
 
-                    // Script para encontrar e clicar no botão de enviar
-                    bool enviado = (bool)js.ExecuteScript(@"
+                    if (!checkBoxEnviarImagem.Checked && !checkBoxEnviarVideo.Checked)
+                    {
+
+                        // 3. Envia a mensagem via JavaScript clicando no botão de enviar
+                        IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
+
+                        // Script para encontrar e clicar no botão de enviar
+                        bool enviado = (bool)js.ExecuteScript(@"
                 try {
                     // Localiza o botão pelo atributo data-tab='11'
                     const sendButton = document.querySelector('button[data-tab=""11""][aria-label=""Enviar""]');
@@ -486,16 +566,18 @@ namespace FrizonWhatsappSender
                 }
             ");
 
-                    if (!enviado)
-                    {
-                        throw new Exception("Falha ao localizar ou clicar no botão de enviar");
+                        if (!enviado)
+                        {
+                            throw new Exception("Falha ao localizar ou clicar no botão de enviar");
+                        }
+
                     }
 
                     AppendToLog($"✓ Mensagem enviada para {contato.Nome} (via botão)");
                     enviadoComSucesso = true;
 
                     // 4. Pausa aleatória entre 5-8 segundos apenas se foi enviado com sucesso
-                    int delay = new Random().Next(5000, 8000);
+                    int delay = new Random().Next(settings.MinSendDelay * 1000, settings.MaxSendDelay * 1000);
                     AppendToLog($"⏳ Aguardando {delay / 1000}s antes do próximo...");
                     Thread.Sleep(delay);
                 }
@@ -507,7 +589,7 @@ namespace FrizonWhatsappSender
                     if (tentativas < maxTentativas)
                     {
                         // Espera um tempo crescente antes de tentar novamente (2, 4, 6, 8 segundos)
-                        int delayRetry = tentativas * 2000;
+                        int delayRetry = tentativas * (settings.RetryDelayMultiplier * 1000);
                         AppendToLog($"⏳ Aguardando {delayRetry / 1000}s antes de tentar novamente...");
                         Thread.Sleep(delayRetry);
                     }
@@ -577,15 +659,58 @@ namespace FrizonWhatsappSender
                            MessageBoxButtons.OK,
                            MessageBoxIcon.Information);
         }
+
+        private void groupBoxMensagens_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnMidia_Click(object sender, EventArgs e)
+        {
+            frmConfigMidia frmConfigMidiaForm = new frmConfigMidia();
+            frmConfigMidiaForm.Show();
+        }
+
+        private void btnConfig_Click(object sender, EventArgs e)
+        {
+            SettingsForm frmConfigTimes = new SettingsForm(settings);
+            frmConfigTimes.Show();
+        }
+
+        private void btnPlanilha_Click(object sender, EventArgs e)
+        {
+            planilhaModelo planilhaModeloUser = new planilhaModelo();
+            planilhaModeloUser.Show();
+        }
+
+        private void SalvarLogEmArquivo()
+        {
+            try
+            {
+                using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+                {
+                    saveFileDialog.Title = "Salvar log como...";
+                    saveFileDialog.Filter = "Arquivo de Texto (*.txt)|*.txt|Todos os Arquivos (*.*)|*.*";
+                    saveFileDialog.FileName = $"log_{DateTime.Now:yyyyMMdd_HHmmss}.txt";
+
+                    if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        File.WriteAllText(saveFileDialog.FileName, txtLog.Text, Encoding.UTF8);
+                        MessageBox.Show("Log salvo com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao salvar o log:\n{ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SalvarLogEmArquivo();
+        }
     }
-
-
-
-
-
-
-
-
 
 
     public class Contato

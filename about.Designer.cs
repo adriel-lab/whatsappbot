@@ -44,7 +44,7 @@
             // 
             // mainPanel
             // 
-            mainPanel.BackColor = Color.White;
+            mainPanel.BackColor = Color.FromArgb(253, 253, 252);
             mainPanel.Controls.Add(logoPicture);
             mainPanel.Controls.Add(appTitle);
             mainPanel.Controls.Add(versionLabel);
@@ -54,6 +54,7 @@
             mainPanel.Controls.Add(okButton);
             mainPanel.Controls.Add(copyrightLabel);
             mainPanel.Dock = DockStyle.Fill;
+            mainPanel.ForeColor = Color.Black;
             mainPanel.Location = new Point(0, 0);
             mainPanel.Margin = new Padding(4, 3, 4, 3);
             mainPanel.Name = "mainPanel";

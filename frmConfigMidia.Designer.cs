@@ -34,7 +34,7 @@
             panelContainer = new Panel();
             grpPreview = new GroupBox();
             grpAcoes = new GroupBox();
-            button1 = new Button();
+            btnRestart = new Button();
             btnPlayPause = new Button();
             panelVideo = new Panel();
             btnCancelar = new Button();
@@ -107,7 +107,7 @@
             // 
             // grpAcoes
             // 
-            grpAcoes.Controls.Add(button1);
+            grpAcoes.Controls.Add(btnRestart);
             grpAcoes.Controls.Add(btnPlayPause);
             grpAcoes.Controls.Add(panelVideo);
             grpAcoes.Controls.Add(lblVideo);
@@ -120,20 +120,20 @@
             grpAcoes.TabStop = false;
             grpAcoes.Text = "Pré-visualização video";
             // 
-            // button1
+            // btnRestart
             // 
-            button1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            button1.BackColor = Color.White;
-            button1.FlatStyle = FlatStyle.Flat;
-            button1.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            button1.ForeColor = SystemColors.ControlText;
-            button1.Location = new Point(71, 359);
-            button1.Name = "button1";
-            button1.Size = new Size(118, 30);
-            button1.TabIndex = 12;
-            button1.Text = "🔄 Reiniciar";
-            button1.UseVisualStyleBackColor = false;
-            button1.Click += btnRestart_Click;
+            btnRestart.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnRestart.BackColor = Color.White;
+            btnRestart.FlatStyle = FlatStyle.Flat;
+            btnRestart.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnRestart.ForeColor = SystemColors.ControlText;
+            btnRestart.Location = new Point(71, 359);
+            btnRestart.Name = "btnRestart";
+            btnRestart.Size = new Size(118, 30);
+            btnRestart.TabIndex = 12;
+            btnRestart.Text = "🔄 Reiniciar";
+            btnRestart.UseVisualStyleBackColor = false;
+            btnRestart.Click += btnRestart_Click;
             // 
             // btnPlayPause
             // 
@@ -269,6 +269,6 @@
         private Button btnSubstituirImagem;
         private Panel panelVideo;
         private Button btnPlayPause;
-        private Button button1;
+        private Button btnRestart;
     }
 }
