@@ -1,0 +1,123 @@
+{
+  "format": 1,
+  "restore": {
+    "E:\\Programas e Jogos\\.NET REPOS\\FrizonWhatsappSender\\FrizonWhatsappSender\\FrizonWhatsappSender.csproj": {}
+  },
+  "projects": {
+    "E:\\Programas e Jogos\\.NET REPOS\\FrizonWhatsappSender\\FrizonWhatsappSender\\FrizonWhatsappSender.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "E:\\Programas e Jogos\\.NET REPOS\\FrizonWhatsappSender\\FrizonWhatsappSender\\FrizonWhatsappSender.csproj",
+        "projectName": "FrizonWhatsappSender",
+        "projectPath": "E:\\Programas e Jogos\\.NET REPOS\\FrizonWhatsappSender\\FrizonWhatsappSender\\FrizonWhatsappSender.csproj",
+        "packagesPath": "C:\\Users\\adrie\\.nuget\\packages\\",
+        "outputPath": "E:\\Programas e Jogos\\.NET REPOS\\FrizonWhatsappSender\\FrizonWhatsappSender\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "E:\\Programas e Jogos\\.NET SDKS\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\adrie\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0-windows"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0-windows7.0": {
+            "targetAlias": "net8.0-windows",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net8.0-windows7.0": {
+          "targetAlias": "net8.0-windows",
+          "dependencies": {
+            "AutoItX.Dotnet": {
+              "target": "Package",
+              "version": "[3.3.14.5, )"
+            },
+            "EPPlus": {
+              "target": "Package",
+              "version": "[8.0.5, )"
+            },
+            "FFMediaToolkit": {
+              "target": "Package",
+              "version": "[4.6.0, )"
+            },
+            "FFmpeg.AutoGen": {
+              "target": "Package",
+              "version": "[7.1.1, )"
+            },
+            "LibVLCSharp.WinForms": {
+              "target": "Package",
+              "version": "[3.9.3, )"
+            },
+            "Microsoft.Web.WebView2": {
+              "target": "Package",
+              "version": "[1.0.3240.44, )"
+            },
+            "Selenium.WebDriver": {
+              "target": "Package",
+              "version": "[4.33.0, )"
+            },
+            "Selenium.WebDriver.ChromeDriver": {
+              "target": "Package",
+              "version": "[136.0.7103.11300, )"
+            },
+            "VideoLAN.LibVLC.Windows": {
+              "target": "Package",
+              "version": "[3.0.21, )"
+            },
+            "Xabe.FFmpeg": {
+              "target": "Package",
+              "version": "[6.0.1, )"
+            },
+            "Xabe.FFmpeg.Downloader": {
+              "target": "Package",
+              "version": "[6.0.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            },
+            "Microsoft.WindowsDesktop.App.WindowsForms": {
+              "privateAssets": "none"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
