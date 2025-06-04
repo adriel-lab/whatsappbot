@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using OpenQA.Selenium.Support.UI;
 
 namespace FrizonWhatsappSender
 {
@@ -402,9 +403,16 @@ namespace FrizonWhatsappSender
                     IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
 
                     // Passo 1: Abrir menu de anexos
-                    js.ExecuteScript("document.querySelector('span[data-icon=\"plus-rounded\"]').click();");
+                    // Aguarda até o botão de anexar estar presente no DOM
+                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+                    IWebElement botaoAnexar = wait.Until(d => d.FindElement(By.CssSelector("button[title='Anexar']")));
+
+                    // Clica usando JavaScript (mais confiável em alguns contextos de UI dinâmica)
+                    js.ExecuteScript("arguments[0].click();", botaoAnexar);
+
                     AppendToLog("✅ Clique no botão de anexos.");
-                    Thread.Sleep(delayAbrirAnexos);
+                    Thread.Sleep(delayAbrirAnexos); // mantém sua pausa original se necessário para o próximo passo
+
 
                     // Passo 2: Clicar no botão 'Fotos e Vídeos'
                     string jsClickFotosVideos = @"
