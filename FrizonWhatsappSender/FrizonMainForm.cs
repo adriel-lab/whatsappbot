@@ -383,8 +383,8 @@ namespace FrizonWhatsappSender
                 int delayAbrirAnexos = 2000;
                 int delaySelecionarAnexo = 3000;
                 int delayCarregarArquivo = 0;
-                int delayParaVideo = (settings.delayFoto * 1000);
-                int delayParaFoto = (settings.delayVideo * 1000);
+                int delayParaVideo = (settings.delayVideo * 1000);
+                int delayParaFoto = (settings.delayFoto * 1000);
 
                 if (checkBoxEnviarImagem.Checked || checkBoxEnviarVideo.Checked)
                 {
@@ -452,6 +452,7 @@ namespace FrizonWhatsappSender
                     }
 
                     Thread.Sleep(delayCarregarArquivo);
+           
 
                     // Passo 4: Enviar
                     try

@@ -92,7 +92,7 @@
             versionLabel.Name = "versionLabel";
             versionLabel.Size = new Size(247, 23);
             versionLabel.TabIndex = 2;
-            versionLabel.Text = "Versão: 0.0.2";
+            versionLabel.Text = "Versão: 0.0.7";
             versionLabel.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // divider
