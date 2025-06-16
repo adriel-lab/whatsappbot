@@ -170,7 +170,7 @@
             numDelayVideo.Size = new Size(80, 25);
             numDelayVideo.TabIndex = 2;
             toolTip.SetToolTip(numDelayVideo, "Tempo de espera (em segundos) após selecionar um vídeo antes de enviar");
-            numDelayVideo.Value = new decimal(new int[] { 8, 0, 0, 0 });
+            numDelayVideo.Value = new decimal(new int[] { 10, 0, 0, 0 });
             // 
             // lblDelayVideo
             // 
@@ -228,7 +228,7 @@
             numMinDelayBetweenContacts.BorderStyle = BorderStyle.FixedSingle;
             numMinDelayBetweenContacts.Font = new Font("Segoe UI", 9.75F);
             numMinDelayBetweenContacts.Location = new Point(270, 33);
-            numMinDelayBetweenContacts.Minimum = new decimal(new int[] { 60, 0, 0, 0 });
+            numMinDelayBetweenContacts.Minimum = new decimal(new int[] { 20, 0, 0, 0 });
             numMinDelayBetweenContacts.Name = "numMinDelayBetweenContacts";
             numMinDelayBetweenContacts.Size = new Size(80, 25);
             numMinDelayBetweenContacts.TabIndex = 1;
@@ -252,7 +252,7 @@
             numMaxDelayBetweenContacts.Font = new Font("Segoe UI", 9.75F);
             numMaxDelayBetweenContacts.Location = new Point(270, 73);
             numMaxDelayBetweenContacts.Maximum = new decimal(new int[] { 120, 0, 0, 0 });
-            numMaxDelayBetweenContacts.Minimum = new decimal(new int[] { 120, 0, 0, 0 });
+            numMaxDelayBetweenContacts.Minimum = new decimal(new int[] { 30, 0, 0, 0 });
             numMaxDelayBetweenContacts.Name = "numMaxDelayBetweenContacts";
             numMaxDelayBetweenContacts.Size = new Size(80, 25);
             numMaxDelayBetweenContacts.TabIndex = 2;

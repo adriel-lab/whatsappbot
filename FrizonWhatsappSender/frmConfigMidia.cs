@@ -225,9 +225,29 @@ namespace FrizonWhatsappSender
         {
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
-                dialog.Filter = "Vídeos|*.mp4;*.mov;*.avi";
+                // Permite visualizar todos os arquivos, mas filtra apenas MP4 por padrão
+                dialog.Filter = "Vídeos MP4 (*.mp4)|*.mp4|Todos os arquivos (*.*)|*.*";
+                dialog.Title = "Selecione um vídeo no formato MP4";
+
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
+                    // Verifica se a extensão é .mp4 (ignorando maiúsculas/minúsculas)
+                    if (!dialog.FileName.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase))
+                    {
+                        MessageBox.Show(
+                            "❌ Formato de vídeo não suportado!\n\n" +
+                            "Este sistema só aceita vídeos no formato **MP4** por garantia de compatibilidade.\n\n" +
+                            "🔹 **O que fazer?**\n" +
+                            "- Converta seu vídeo para MP4 usando um conversor online gratuito.\n" +
+                            "- Ou selecione um arquivo já no formato correto.\n\n" +
+                            "📌 Dica: Formatos como MOV, AVI ou WMV precisam ser convertidos antes.",
+                            "Formato incorreto",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+
+                        return; // Impede a continuação se não for MP4
+                    }
+
                     try
                     {
                         await Task.Run(() => File.Copy(dialog.FileName, caminhoVideoPadrao, true));
