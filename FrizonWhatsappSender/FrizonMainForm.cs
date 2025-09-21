@@ -405,7 +405,9 @@ namespace FrizonWhatsappSender
                     // Passo 1: Abrir menu de anexos
                     // Aguarda até o botão de anexar estar presente no DOM
                     WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-                    IWebElement botaoAnexar = wait.Until(d => d.FindElement(By.CssSelector("button[title='Anexar']")));
+                  //  IWebElement botaoAnexar = wait.Until(d => d.FindElement(By.CssSelector("button[title='Anexar']")));
+
+                    IWebElement botaoAnexar = wait.Until(d => d.FindElement(By.CssSelector("div[aria-label='Anexar']")));
 
                     // Clica usando JavaScript (mais confiável em alguns contextos de UI dinâmica)
                     js.ExecuteScript("arguments[0].click();", botaoAnexar);
